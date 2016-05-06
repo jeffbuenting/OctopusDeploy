@@ -1,0 +1,6 @@
+{
+  "name": "Octopusdeploy",
+  "tagline": "Octopus Deploy Powershell Module",
+  "body": "#OctopusDeploy   \r\n##Octopus Deploy Powershell Module\r\n\r\nPoweshell module for Octopus Deploy.   \r\nhttps://octopus.com/\r\n\r\n###Installation\r\n\r\ndownload both the PSM1 and PSD1 files. Import the PSD1.   \r\n\r\n[Back to Home](http://jeffbuenting.github.io)",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
