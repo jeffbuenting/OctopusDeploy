@@ -53,20 +53,20 @@ Describe "$ModuleName : Install-OctoClientTentacle" {
         }
 
         It "has Synopsis Help Section that it not start with the command name" {
-            $H.Synopsis | Should Not Match $H.Name
+           { $H.Synopsis } | Should Not Match $H.Name
         }
 
         It "has Description Help Section" {
-                $H.Description | Should Not BeNullorEmpty
+            { $H.Description } | Should Not BeNullorEmpty
         }
 
         It "has Parameters Help Section" {
-                $H.Parameters.parameter.description  | Should Not BeNullorEmpty
+            { $H.Parameters.parameter.description }  | Should Not BeNullorEmpty
         }
 
         # Examples
         it "Example - Count should be greater than 0"{
-                $H.examples.example  | Measure-Object | Select-Object -ExpandProperty Count | Should BeGreaterthan 0
+            { $H.examples.example }  | Measure-Object | Select-Object -ExpandProperty Count | Should BeGreaterthan 0
         }
             
         # Examples - Remarks (small description that comes with the example)
@@ -78,7 +78,7 @@ Describe "$ModuleName : Install-OctoClientTentacle" {
         }
 
         It "has Notes Help Section" {
-                $H.alertSet  | Should Not BeNullorEmpty
+            { $H.alertSet }  | Should Not BeNullorEmpty
         }
     } 
 
