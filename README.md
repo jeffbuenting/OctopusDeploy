@@ -6,8 +6,7 @@ https://octopus.com/
 
 ###Master
 
-Version: 1.0
-
+Version: 1.0.0
 [![Build status](https://ci.appveyor.com/api/projects/status/ywqa6uoqeru4y2el/branch/master?svg=true)](https://ci.appveyor.com/project/jeffbuenting/octopusdeploy/branch/master)
 
 ###Installation   

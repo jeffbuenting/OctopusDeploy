@@ -82,13 +82,15 @@ Describe "$ModuleName : Install-OctoClientTentacle" {
         }
     } 
 
+    Mock -CommandName Invoke-Command -MockWith {} -Verifiable
 
     
     Context Execution {
         
         It "Accepts Pipeline input" {
-            "Server" | Install-OctoClientTentacle -Path c:\temp\Install.msi -OctopusServerThumbprint "44444444444" -octopusURI http://OctoServer -octopusApiKey "555" -OctopusEnvironment Test -OctopusRoles Web | Should Not Throw
-        } -Pending
+            { "Server" | Install-OctoClientTentacle -Path c:\temp\Install.msi -OctopusServerThumbprint "44444444444" -octopusURI http://OctoServer -octopusApiKey "555" -OctopusEnvironment Test -OctopusRoles Web } | Should Not Throw
+            Assert-VerifiableMock
+        }
     }    
 }
 
