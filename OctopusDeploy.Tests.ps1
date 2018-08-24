@@ -12,7 +12,7 @@ Get-Module -Name $ModuleName -All | Remove-Module -Force -Verbose
 
 Import-Module "$ModulePath\$ModuleName.PSD1" -Force -ErrorAction Stop  
 
-
+InModuleScope $ModuleName {
 
 #-------------------------------------------------------------------------------------
 # ----- Check if all fucntions in the module have a unit tests
@@ -93,4 +93,5 @@ Describe "$ModuleName : Install-OctoClientTentacle" {
     }    
 }
 
+}
    
