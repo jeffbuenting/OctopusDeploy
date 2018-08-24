@@ -1,32 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="9" errors="0" failures="0" not-run="0" inconclusive="1" ignored="0" skipped="0" invalid="0" date="2018-08-24" time="12:28:41">
-  <environment user="Jeff.Buenting" machine-name="SL-JEFFB" cwd="F:\GitHub\OctopusDeploy" user-domain="STRATUSLIVEDEMO" platform="Microsoft Windows 10 Enterprise|C:\WINDOWS|\Device\Harddisk0\Partition1" nunit-version="2.5.8.0" os-version="10.0.17134" clr-version="4.0.30319.42000" />
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="8" errors="0" failures="0" not-run="0" inconclusive="1" ignored="0" skipped="0" invalid="0" date="2018-08-24" time="16:40:16">
+  <environment user="appveyor" machine-name="APPVYR-WIN" cwd="C:\projects\octopusdeploy" user-domain="APPVYR-WIN" platform="Microsoft Windows Server 2012 R2 Datacenter|C:\windows|\Device\Harddisk0\Partition5" nunit-version="2.5.8.0" os-version="6.3.9600" clr-version="4.0.30319.42000" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="TestFixture" name="Pester" executed="True" result="Inconclusive" success="True" time="0.4529" asserts="0" description="Pester">
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Inconclusive" success="True" time="0.9538" asserts="0" description="Pester">
     <results>
-      <test-suite type="TestFixture" name="F:\GitHub\OctopusDeploy\OctopusDeploy.Tests.ps1" executed="True" result="Inconclusive" success="True" time="0.4529" asserts="0" description="F:\GitHub\OctopusDeploy\OctopusDeploy.Tests.ps1">
+      <test-suite type="TestFixture" name="C:\projects\octopusdeploy\OctopusDeploy.Tests.ps1" executed="True" result="Inconclusive" success="True" time="0.9538" asserts="0" description="C:\projects\octopusdeploy\OctopusDeploy.Tests.ps1">
         <results>
-          <test-suite type="TestFixture" name="OctopusDeploy : Module Tests" executed="True" result="Success" success="True" time="0.1277" asserts="0" description="OctopusDeploy : Module Tests">
+          <test-suite type="TestFixture" name="octopusdeploy : Module Tests" executed="True" result="Success" success="True" time="0.5931" asserts="0" description="octopusdeploy : Module Tests">
             <results>
-              <test-case description="should have a test for each function" name="OctopusDeploy : Module Tests.should have a test for each function" time="0.1277" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="should have a test for each function" name="octopusdeploy : Module Tests.should have a test for each function" time="0.5931" asserts="0" success="True" result="Success" executed="True" />
             </results>
           </test-suite>
-          <test-suite type="TestFixture" name="OctopusDeploy : Install-OctoClientTentacle" executed="True" result="Inconclusive" success="True" time="0.3252" asserts="0" description="OctopusDeploy : Install-OctoClientTentacle">
+          <test-suite type="TestFixture" name="octopusdeploy : Install-OctoClientTentacle" executed="True" result="Inconclusive" success="True" time="0.3607" asserts="0" description="octopusdeploy : Install-OctoClientTentacle">
             <results>
-              <test-suite type="TestFixture" name="Help" executed="True" result="Success" success="True" time="0.2523" asserts="0" description="Help">
+              <test-suite type="TestFixture" name="Help" executed="True" result="Success" success="True" time="0.3406" asserts="0" description="Help">
                 <results>
-                  <test-case description="has Synopsis Help Section" name="OctopusDeploy : Install-OctoClientTentacle.Help.has Synopsis Help Section" time="0.0852" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="has Synopsis Help Section that it not start with the command name" name="OctopusDeploy : Install-OctoClientTentacle.Help.has Synopsis Help Section that it not start with the command name" time="0.0206" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="has Description Help Section" name="OctopusDeploy : Install-OctoClientTentacle.Help.has Description Help Section" time="0.0163" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="has Parameters Help Section" name="OctopusDeploy : Install-OctoClientTentacle.Help.has Parameters Help Section" time="0.0349" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Example - Count should be greater than 0" name="OctopusDeploy : Install-OctoClientTentacle.Help.Example - Count should be greater than 0" time="0.0247" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="Example - Remarks on -------------------------- EXAMPLE 1 --------------------------" name="OctopusDeploy : Install-OctoClientTentacle.Help.Example - Remarks on -------------------------- EXAMPLE 1 --------------------------" time="0.0244" asserts="0" success="True" result="Success" executed="True" />
-                  <test-case description="has Notes Help Section" name="OctopusDeploy : Install-OctoClientTentacle.Help.has Notes Help Section" time="0.0462" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="has Synopsis Help Section" name="octopusdeploy : Install-OctoClientTentacle.Help.has Synopsis Help Section" time="0.2255" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="has Synopsis Help Section that it not start with the command name" name="octopusdeploy : Install-OctoClientTentacle.Help.has Synopsis Help Section that it not start with the command name" time="0.0228" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="has Description Help Section" name="octopusdeploy : Install-OctoClientTentacle.Help.has Description Help Section" time="0.0061" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="has Parameters Help Section" name="octopusdeploy : Install-OctoClientTentacle.Help.has Parameters Help Section" time="0.006" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Example - Count should be greater than 0" name="octopusdeploy : Install-OctoClientTentacle.Help.Example - Count should be greater than 0" time="0.07" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="has Notes Help Section" name="octopusdeploy : Install-OctoClientTentacle.Help.has Notes Help Section" time="0.0101" asserts="0" success="True" result="Success" executed="True" />
                 </results>
               </test-suite>
-              <test-suite type="TestFixture" name="Execution" executed="True" result="Inconclusive" success="True" time="0.0729" asserts="0" description="Execution">
+              <test-suite type="TestFixture" name="Execution" executed="True" result="Inconclusive" success="True" time="0.0201" asserts="0" description="Execution">
                 <results>
-                  <test-case description="Accepts Pipeline input" name="OctopusDeploy : Install-OctoClientTentacle.Execution.Accepts Pipeline input" time="0.0729" asserts="0" success="True" result="Inconclusive" executed="True" />
+                  <test-case description="Accepts Pipeline input" name="octopusdeploy : Install-OctoClientTentacle.Execution.Accepts Pipeline input" time="0.0201" asserts="0" success="True" result="Inconclusive" executed="True" />
                 </results>
               </test-suite>
             </results>
