@@ -82,7 +82,7 @@ Describe "$ModuleName : Install-OctoClientTentacle" {
         }
     } 
 
-    Mock -CommandName Invoke-Command -MockWith {} -Verifiable
+    Mock -CommandName Invoke-Command -ParameterFilter { $Scriptblock } -MockWith {} -Verifiable
 
     
     Context Execution {
