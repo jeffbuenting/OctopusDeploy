@@ -12,7 +12,6 @@ Get-Module -Name $ModuleName -All | Remove-Module -Force -Verbose
 
 Import-Module "$ModulePath\$ModuleName.PSD1" -Force -ErrorAction Stop  
 
-InModuleScope $ModuleName {
 
 #-------------------------------------------------------------------------------------
 # ----- Check if all fucntions in the module have a unit tests
@@ -48,11 +47,9 @@ Describe "$ModuleName : Install-OctoClientTentacle" {
 
         $H = Help Install-OctoClientTentacle -Full
 
-        $H
-
         # ----- Help Tests
         It "has Synopsis Help Section" {
-                $H.Synopsis  | Should Not BeNullorEmpty
+            { $H.Synopsis } | Should Not BeNullorEmpty
         }
 
         It "has Synopsis Help Section that it not start with the command name" {
@@ -95,5 +92,5 @@ Describe "$ModuleName : Install-OctoClientTentacle" {
     }    
 }
 
-}
+
    

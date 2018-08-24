@@ -75,7 +75,7 @@ Function Install-OctoClientTentacle {
         [String]$OctopusEnvironment,
 
         [Parameter( Mandatory = $True )]
-        [String]$OctopusRoles
+        [String[]]$OctopusRoles
     )
 
     Process {
@@ -137,7 +137,11 @@ Function Install-OctoClientTentacle {
                 $OctoEnv = $repository.Environments.FindByName($Using:OctopusEnvironment)
                 
                 $tentacle.EnvironmentIds.Add($OctoEnv.ID)
-                $tentacle.Roles.Add($Using:OctopusRoles)
+
+                # ----- Loop and add all listed Roles
+                Foreach ( $R in $Using:OctopusRoles ) {
+                    $tentacle.Roles.Add($R)
+                }
 
                 $tentacleEndpoint = New-Object Octopus.Client.Model.Endpoints.ListeningTentacleEndpointResource
                 $tentacle.EndPoint = $tentacleEndpoint
