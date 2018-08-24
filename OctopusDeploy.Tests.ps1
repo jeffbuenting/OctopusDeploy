@@ -48,6 +48,8 @@ Describe "$ModuleName : Install-OctoClientTentacle" {
 
         $H = Help Install-OctoClientTentacle -Full
 
+        $H
+
         # ----- Help Tests
         It "has Synopsis Help Section" {
                 $H.Synopsis  | Should Not BeNullorEmpty
