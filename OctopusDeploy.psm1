@@ -7,325 +7,146 @@
 #----------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------
-# Server Cmdlets
+# Client Cmdlets
 #----------------------------------------------------------------------------------
 
-Function Connect-ODServer {
+Function Install-OctoClientTentacle {
 
 <#
     .Synopsis
-        Connects to an Octopus Deploy environment
+        Deploy Octopus Client Tentacle
 
     .Description
-        Initial connection to the Octopus Deploy Server so further data can be extracted.
-
-    .Parameter OctopusDLL
-        Location of the Octopus DLL assemblies
-
-    .Parameter APIKey
-        API Key unique to your environment.  Allows the server to know that you are authorized
-
-    .Parameter URI
-        Octopus Deploy URI
-
-    .Link
-        https://dalmirogranias.wordpress.com/2014/09/19/octopus-api-and-powershell-getting-the-libraries-and-connecting-to-octopus/
-#>
-
-    [CmdletBinding()]
-    Param (
-        [String]$OctopusDLL,
-
-        #[String]$APIKey = 'API-N7TOWCVGG3SMVNIKUDDIMB1ITS',
-        [String]$APIKey = 'API-TMTEQFVCCCI6URHQYJAAOQHJKC',
-
-        [String]$URI = 'http://octopus2012/api'
-    )
-
-    # ----- Adding Octopus Deploy Libraries
-
-    if ( [String]::IsNullOrEmpty($OctopusDLL) ) {
-            Write-Verbose "OctopusDLL Path is empty."
-
-            if ( Test-path -Path "C:\Program Files\Octopus Deploy\Tentacle" ) {
-                Write-Verbose "Loading DLLs from Octopus Tentacle"
-                $DLLPath = "C:\Program Files\Octopus Deploy\Tentacle"
-            }
-
-            if ( Test-Path -path "C:\Program Files\Octopus Deploy\Octopus" ) {
-                Write-Verbose "Loading DLLs from Octopus Server"
-                $DLLPath = "C:\Program Files\Octopus Deploy\Octopus"
-            }
-        }
-        Else {
-            Write-Verbose "Loading Octopus DLLs from $OctopusDLL"
-            $DLLPath = $OctopusDLL
-    }
-    
-    # ----- Load DLL Assemblies
-    if ( $DLLPath -ne $Null ) {
-            Write-verbose "Loading DLLs"
-            Add-Type -Path "$DLLPath\Octopus.Client.dll"
-            Add-Type -Path "$DLLPath\Octopus.Platform.dll"
-            Add-Type -Path "$DLLPath\Newtonsoft.json.dll"
-        }
-        Else {
-            Write-Verbose "ERROR Throwing Exception"
-            Throw "Octopus DLLs do not exist at specified location.`n`nVerify path and try again."
-            
-    }
-
-    # ----- Creating a connection
-    $endpoint = new-object Octopus.Client.OctopusServerEndpoint $URI,$apikey
-    $repository = new-object Octopus.Client.OctopusRepository $endpoint
-
-    Write-Output $repository
-
-}
-
-#----------------------------------------------------------------------------------
-
-Function Get-ODEnvironment {
-
-<# 
-    .Synopsis
-        Gets Octopus Deploy Environments.
-
-    .Description
-        Gets Octopus Deploy Environments.  These are what defines the group of computers used to deploy Octopus Deploy project deployments.
-
-    .Parameter OctopusConnection
-        Connection to the Octopus Deploy Server established by executing Connect-ODServer. 
-        
-    .Parameter Name
-        Name of the environment to return.  If not provided then all environments will be returned.  Wildcards are supported.
-        
-    .Example
-        Returns all environments
-
-        $Connection = Connect-ODServer -OctopusDLL 'F:\OneDrive - StratusLIVE, LLC\Scripts\OctopusDeploy\OctopusDLLs'
-
-        Get-ODEnvironment -OctopusConnection $Connection 
-
-    .Example
-        Returns all environments beginning with S
-
-        $Connection = Connect-ODServer -OctopusDLL 'F:\OneDrive - StratusLIVE, LLC\Scripts\OctopusDeploy\OctopusDLLs'
-
-        Get-ODEnvironment -OctopusConnection $Connection -Name "s*" 
-
-    .Example
-        Return the enviroment named Lab
-
-        $Connection = Connect-ODServer -OctopusDLL 'F:\OneDrive - StratusLIVE, LLC\Scripts\OctopusDeploy\OctopusDLLs' -Verbose
-
-        Get-ODEnvironment -OctopusConnection $Connection -Name "Lab" -verbose
-
-    .Note
-        Author: Jeff Buenting
-        Date: 2015 DEC 09
-#>
-
-    [CmdletBinding(DefaultParameterSetName='Default')]
-    Param (
-        [Parameter(ParameterSetName='Default',Mandatory=$True)]
-        [Parameter(ParameterSetName='Name',Mandatory=$True)]
-        [Octopus.Client.OctopusRepository]$OctopusConnection,
-
-        [Parameter(ParameterSetName='Name')]
-        [String[]]$Name
-    )
-    
-    Switch ( $PSCmdlet.ParameterSetName ) {
-        'Name' {
-            Write-Verbose "ParameterSet: Name"
-          
-            if ( ( $Name | Measure-Object ).count -eq 1 ) {
-                    
-                    # ----- Because $Name is a array of Strings, the contains method does not work correctly.  Need to reference the first element of the array ( which is the only
-                    # ----- element because count is 1) to use the contains method.
-                    if ( $Name[0].contains('*') ) {
-                            Write-Verbose "Finding Wildcards"
-                            Write-Output ( $OctopusConnection.Environments.FindAll() | where Name -Like $Name )
-                        }
-                        else {
-                            Write-verbose "Finding Environments: $Name"
-                            Write-Output $OctopusConnection.Environments.FindByName( $Name )
-                    }
-                }
-                else {
-                    Write-Verbose "Finding Environment: $($Name | out-string) "
-                    Write-Output $OctopusConnection.Environments.FindByNames( $Name )
-            }
-        }
-
-        'Default' {
-            Write-Verbose "Finding all Environments"
-            $OctopusConnection.Environments.FindAll()
-        }
-    }
-}
-
-#----------------------------------------------------------------------------------
-
-Function Get-ODMachine {
-
-<#
-    .Synopsis
-        Returns Octopus Deploy Machine.
-
-    .Description
-        Returns Octopus Deploy Machines.  
-
-    .Parameter OctopusConnection
-         Connection to the Octopus Deploy Server established by executing Connect-ODServer. 
-        
-    .Parameter Name
-        Name of the Machine to return.  If not provided then all Machines will be returned.  Wildcards are supported.
-
-    .Parameter Environment
-        Octopus Deploy Environment to get machines from.
-
-    .Example Connection to the Octopus Deploy Server established by executing Connect-ODServer. 
-        
-    .Parameter Name
-        Name of the environment to return.  If not provided then all environments will be returned.  Wildcards are supported.
-        
-    .Example
-        Retrieves all of the machines that Octopus Deploy knows about
-        
-        $Connection = Connect-ODServer -OctopusDLL 'F:\OneDrive - StratusLIVE, LLC\Scripts\OctopusDeploy\OctopusDLLs' 
-        Get-ODMachine -OctopusConnection $Connection 
-
-    .Example
-        Retrieves all of the machines in the Lab Environment.
-        
-        $Connection = Connect-ODServer -OctopusDLL 'F:\OneDrive - StratusLIVE, LLC\Scripts\OctopusDeploy\OctopusDLLs' 
-        Get-ODEnvironment -OctopusConnection $Connection -Name Lab | Get-ODMachine -OctopusConnection $Connection 
-
-    .Example
-        Retrieves the machine named lab1
-        
-        $Connection = Connect-ODServer -OctopusDLL 'F:\OneDrive - StratusLIVE, LLC\Scripts\OctopusDeploy\OctopusDLLs' 
-        Get-ODMachine -OctopusConnection $Connection -Name Lab1
-
-    .Note
-        Author: Jeff Buenting
-        Date: 2015 DEC 09
-   
-          
-#>
-
-    [CmdletBinding(DefaultParameterSetName='Default')]
-    Param (
-        [Parameter(ParameterSetName='Default',Mandatory=$True)]
-        [Parameter(ParameterSetName='Name',Mandatory=$True)]
-        [Parameter(ParameterSetName='Environment',Mandatory=$True)]
-        [Octopus.Client.OctopusRepository]$OctopusConnection,
-
-        [Parameter(ParameterSetName='Name',Mandatory=$True,ValueFromPipeline=$True)]
-        [String[]]$Name,
-
-        [Parameter(ParameterSetName='Environment',Mandatory=$True,ValueFromPipeline=$True)]
-        [Octopus.Client.Model.EnvironmentResource[]]$Environment
-    )
-    
-    Process {
-        Switch ( $PSCmdlet.ParameterSetName ) {
-            'Name' {
-                Write-Verbose "Returning Machines by Name"
-          
-                if ( ( $Name | Measure-Object ).count -eq 1 ) {
-                    
-                        # ----- Because $Name is a array of Strings, the contains method does not work correctly.  Need to reference the first element of the array ( which is the only
-                        # ----- element because count is 1) to use the contains method.
-                        if ( $Name[0].contains('*') ) {
-                                Write-Verbose "Finding Wildcards"
-                                Write-Output ( $OctopusConnection.Machines.FindAll() | where Name -Like $Name )
-                            }
-                            else {
-                                # ----- Returning single machine
-                                Write-verbose "Finding Machine: $Name"
-                                Write-Output $OctopusConnection.Machines.FindByName( $Name )
-                        }
-                    }
-                    else {
-                        # ----- Name is an array of machine names.  Returning the names provided
-                        Write-Verbose "Finding Machines: $($Name | out-string) "
-                        Write-Output $OctopusConnection.Machines.FindByNames( $Name )
-                }
-            }
-
-            'Environment' {
-                Write-Verbose "Returning Environment Machines"
-                foreach ( $E in $Environment ) {
-                    Write-Verbose "     Environment: $E.Name"
-                    Write-Output ($OctopusConnection.machines.FindAll() | where EnvironmentIDs -contains $E.Id)
-                }
-            }
-
-            'Default' {
-                Write-Verbose "Returning all Machines"
-                Write-output $OctopusConnection.machines.FindAll()
-            }
-        }
-    }
-}
-
-#----------------------------------------------------------------------------------
-# Service Cmdlets
-#----------------------------------------------------------------------------------
-
-Function Set-ODService {
-
-<#
-    .Synopsis
-        Change the OctopusDeploy Tentacle Service Properties.
-
-    .Description
-        Changes the OctopusDeploy Tentacle Service properties depending on what is supplied in the parameters.
+        Installs and Configures an Octopus Deploy Client Tentacle.
 
     .Parameter ComputerName
-        Name of the computer running the service
+        Name of the computer where the client will be installed
 
-    .parameter Credential
-        Logon credentials to change on the service
+    .Parameter Path
+        Source path for the Octopus Tentacle install.
+
+    .Parameter OctopusServerThumbprint
+        Thumbprint from the Octopus Deploy Server
+
+    .Parameter OctopusUR
+        URI Web Address of the Octopus Deploy Server
+
+    .Parameter OctopusAPIKey
+        Octopus Deploy API Key
+
+    .Parameter OctopusEnvironemtn
+        Environment Name this client should be added to.
+
+    .Parameter OctopusRoles
+        Roles this client will be assigned.
 
     .Example
-        change the logon credentials for the OctopusDeploy Service on ServerA
+        Install client
 
-        Set-ODService -Computername ServerA -Credential $Cred
+        install-OctoClientTentacle -ComputerName $ComputerName -Path "c:\temp\Octopus.Tentacle.3.22.0-x64.msi" -OctopusServerThumbprint $octoThumb -octopusURI $OctopusURI -octopusApiKey $OctoAPIKey -OctopusEnvironment 'JB04' -OctopusRoles 'Web' -verbose
 
     .Link
-        https://4sysops.com/archives/managing-services-the-powershell-way-part-8-service-accounts/
+        https://octopus.com/docs/infrastructure/windows-targets/automating-tentacle-installation
+
+    .Notes
+        Author : Jeff Buenting
+        Date : 2018 Aug 23
         
 #>
 
     [CmdletBinding()]
     Param (
-        [Parameter(ValueFromPipeline=$True)]
-        [String[]]$ComputerName = "LocalHost",
+        [Parameter( ValueFromPipeline = $True )]
+        [String[]]$ComputerName = $env:COMPUTERNAME,
 
-        [Alias("Cred")]
-        [pscredential]$Credential
+        [Parameter( Mandatory = $True )]
+        [String]$Path,
+
+        [Parameter( Mandatory = $True )]
+        [String]$OctopusServerThumbprint,
+
+        [Parameter( Mandatory = $True )]
+        [String]$octopusURI, 
+        
+        [Parameter( Mandatory = $True )]
+        [String]$octopusApiKey,
+
+        [Parameter( Mandatory = $True )]
+        [String]$OctopusEnvironment,
+
+        [Parameter( Mandatory = $True )]
+        [String]$OctopusRoles
     )
 
     Process {
         Foreach ( $C in $ComputerName ) {
-            Write-Verbose "Changeing OctopusDeploy Tentacle Service settings on $C"            
-            
-            # ----- Have to use Get-CIMInstance instead of Get-Service because we need to change the Logon user.  Get-Service does not allow that.  
-            $Service = Get-CimInstance -ComputerName $C -ClassName Win32_Service -Filter "Name = 'OctopusDeploy Tentacle'"
-            
-            If ( $Credential -ne $Null ) {
-                Write-Verbose "Setting Logon Credentials"
-                $Service | Invoke-CIMMethod -Name Change -Arguments @{StartName=$Credential.UserName;StartPassword=($Credential.GetNetworkCredential()).Password}
-                #$Service.Change($null,$null,$null,$null,$null,$null,$Credential.UserName,($Credential.GetNetworkCredential()).Password)
-            }
+            Write-Verbose "Installing Octopus Deploy Client Tentacle on $C"
 
-            Write-Verbose "Restarting Service"
-            $Service | Invoke-CIMMethod -Name StopService
-            $Service | Invoke-CimMethod -Name StartService
-        }  
+            Invoke-Command -ComputerName $ComputerName -ScriptBlock {
+                $VerbosePreference = $Using:VerbosePreference
+
+                Try {
+                    Write-Verbose "Installing Octopus Tentacle Client"
+                    Start-Process -FilePath msiexec -argumentlist "/i $Using:Path /quiet" -wait -ErrorAction Stop
+                }
+                Catch {
+                    $EXceptionMessage = $_.Exception.Message
+                    $ExceptionType = $_.exception.GetType().fullname
+                    Throw "Install-OctopusClientTentacle: Error installing Tentacle.`n`n     $ExceptionMessage`n`n     Exception : $ExceptionType"  
+                }
+
+                Try {
+                    Write-Verbose "Configuring Octopus Tentacle Client"
+                    Start-Process -FilePath "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" -ArgumentList "create-instance --instance ""Tentacle"" --config ""C:\Octopus\Tentacle.config""" -wait -ErrorAction Stop
+                    Start-Process -FilePath "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" -ArgumentList "new-certificate --instance ""Tentacle"" --if-blank" -Wait -ErrorAction Stop
+                    Start-Process -FilePath "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" -ArgumentList "configure --instance ""Tentacle"" --reset-trust" -wait -ErrorAction Stop
+                    Start-Process -FilePath "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" -ArgumentList "configure --instance ""Tentacle"" --app ""C:\Octopus\Applications"" --port ""10933"" --noListen ""False""" -wait  -ErrorAction Stop
+                    Start-Process -FilePath "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" -ArgumentList "configure --instance ""Tentacle"" --trust ""$Using:OctopusServerThumbprint""" -Wait -ErrorAction Stop
+    
+                    Write-Verbose "Creating Firewall Rule for Octopus Tentacle"
+                    if ( -Not ( Get-NetFirewallRule -Name "Octopus Deploy Tentacle" ) ) {
+                        New-NetFirewallRule -Name "Octopus Deploy Tentacle" -DisplayName "Octopus Deploy Tentacle" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 10933 -ErrorAction Stop 
+                    }
+
+                    Write-Verbose "Restarting Octopus Tentacle"
+                    Start-Process -FilePath "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" -ArgumentList "service --instance ""Tentacle"" --install --stop --start" -Wait -ErrorAction Stop
+                }
+                Catch {
+                    $EXceptionMessage = $_.Exception.Message
+                    $ExceptionType = $_.exception.GetType().fullname
+                    Throw "Install-OctopusClientTentacle: Error Configuring Tentacle.`n`n     $ExceptionMessage`n`n     Exception : $ExceptionType"  
+                }
+
+                Write-Verbose "Get the Client Thumbprint"
+                $OctoLog = Get-Content c:\Octopus\Logs\OctopusTentacle.txt 
+                # ----- parse the log, From the line after the one containing A new certificate has been generated, select the thumbprint after the last space.
+                $ClientThumb = ($OctoLog[($OctoLog | Select-string -Pattern 'A new certificate has been generated').LineNumber].split( ' '))[-1]
+
+                Write-verbose "Register client with Octopus Server"
+
+                Add-Type -Path 'C:\Program Files\Octopus Deploy\Tentacle\Newtonsoft.Json.dll'
+                Add-Type -Path 'C:\Program Files\Octopus Deploy\Tentacle\Octopus.Client.dll'
+
+                $endpoint = new-object Octopus.Client.OctopusServerEndpoint $Using:octopusURI, $Using:octopusApiKey
+                $repository = new-object Octopus.Client.OctopusRepository $endpoint
+
+                $tentacle = New-Object Octopus.Client.Model.MachineResource
+
+                $tentacle.name = "Tentacle registered from client"
+
+                $OctoEnv = $repository.Environments.FindByName($Using:OctopusEnvironment)
+                
+                $tentacle.EnvironmentIds.Add($OctoEnv.ID)
+                $tentacle.Roles.Add($Using:OctopusRoles)
+
+                $tentacleEndpoint = New-Object Octopus.Client.Model.Endpoints.ListeningTentacleEndpointResource
+                $tentacle.EndPoint = $tentacleEndpoint
+                $tentacle.Endpoint.Uri = "https://$($Using:ComputerName):10933"
+                $tentacle.Endpoint.Thumbprint = $ClientThumb
+
+                $repository.machines.create($tentacle)
+            }
+        }
     }
 }
+
