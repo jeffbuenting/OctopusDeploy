@@ -82,11 +82,14 @@ Describe "$ModuleName : Install-OctoClientTentacle" {
         }
     } 
 
-    Mock -CommandName Invoke-Command -ParameterFilter { $Scriptblock } -MockWith {} -Verifiable
+    
 
     
     Context Execution {
+
+        Mock -CommandName  Invoke-Command -ParameterFilter {$ComputerName } -MockWith {} -Verifiable
         
+        # ---- The mock
         It "Accepts Pipeline input" {
             { "Server" | Install-OctoClientTentacle -Path c:\temp\Install.msi -OctopusServerThumbprint "44444444444" -octopusURI http://OctoServer -octopusApiKey "555" -OctopusEnvironment Test -OctopusRoles Web } | Should Not Throw
             Assert-VerifiableMock
