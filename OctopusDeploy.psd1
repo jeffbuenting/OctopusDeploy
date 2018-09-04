@@ -12,7 +12,7 @@
 RootModule = 'OctopusDeploy'
 
 # Version number of this module.
-ModuleVersion = '2.0.17'
+ModuleVersion = '2.0.18'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
