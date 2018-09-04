@@ -87,7 +87,7 @@ Describe "$ModuleName : Install-OctoClientTentacle" {
     
     Context Execution {
 
-        Mock -CommandName  Invoke-Command -ParameterFilter {$ComputerName } -MockWith {} -Verifiable
+        Mock -CommandName  Invoke-Command -ParameterFilter {$ComputerName -and $ScriptBlock } -MockWith {} -Verifiable
         
         # ---- The mock
         It "Accepts Pipeline input" {
