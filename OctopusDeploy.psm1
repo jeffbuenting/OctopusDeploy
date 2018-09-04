@@ -104,7 +104,7 @@ Function Install-OctoClientTentacle {
                     Start-Process -FilePath "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" -ArgumentList "configure --instance ""Tentacle"" --trust ""$Using:OctopusServerThumbprint""" -Wait -ErrorAction Stop
     
                     Write-Verbose "Creating Firewall Rule for Octopus Tentacle"
-                    if ( -Not ( Get-NetFirewallRule -Name "Octopus Deploy Tentacle" ) ) {
+                    if ( -Not ( Get-NetFirewallRule -Name "Octopus Deploy Tentacle" -ErrorAction SilentlyContinue ) ) {
                         New-NetFirewallRule -Name "Octopus Deploy Tentacle" -DisplayName "Octopus Deploy Tentacle" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 10933 -ErrorAction Stop 
                     }
 
@@ -117,8 +117,22 @@ Function Install-OctoClientTentacle {
                     Throw "Install-OctopusClientTentacle: Error Configuring Tentacle.`n`n     $ExceptionMessage`n`n     Exception : $ExceptionType"  
                 }
 
-                Write-Verbose "Get the Client Thumbprint"
+                Write-Verbose "Get the Client Thumbprint from the log"
                 $OctoLog = Get-Content c:\Octopus\Logs\OctopusTentacle.txt 
+
+                # ----- parse the log and look for certificate generation error
+                $OctoError = (($octolog | Select-String -Pattern 'FATAL  No certificate has been generated for this Tentacle. Please run the new-certificate command before starting.' ) -split 'FATAL')[-1]
+
+                if ( $OctoError ) {
+                    Write-Warning "Install-OctopusClientTentacle : $OctoError"
+
+                    Start-Process -FilePath "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" -ArgumentList "new-certificate --instance ""Tentacle"" --if-blank" -Wait -ErrorAction Stop
+                    Start-Process -FilePath "C:\Program Files\Octopus Deploy\Tentacle\Tentacle.exe" -ArgumentList "service --instance ""Tentacle"" --install --stop --start" -Wait -ErrorAction Stop
+                }
+                
+                # ----- Reload the log file
+                $OctoLog = Get-Content c:\Octopus\Logs\OctopusTentacle.txt 
+
                 # ----- parse the log, From the line after the one containing A new certificate has been generated, select the thumbprint after the last space.
                 $ClientThumb = ($OctoLog[($OctoLog | Select-string -Pattern 'A new certificate has been generated').LineNumber].split( ' '))[-1]
 
